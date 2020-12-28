@@ -1,0 +1,149 @@
+package com.dao;
+
+import com.model.Login;
+
+public interface UserDao {
+	public boolean login(Login login);
+}
+
+----------------------------------------------------------------
+
+package com.model;
+
+public class Login {
+	private String userName;
+	private String password;
+
+	public Login() {
+		super();
+	}
+
+	public Login(String userName, String password) {
+		super();
+		this.userName = userName;
+		this.password = password;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	@Override
+	public String toString() {
+		return "Login [userName=" + userName + ", password=" + password + "]";
+	}
+
+}
+
+---------------------------------------------------------
+
+package com.service;
+
+import com.dao.UserDao;
+
+public class Login implements UserDao {
+
+	@Override
+	public boolean login(com.model.Login login) {
+		String correctUserName = "Austin";
+		String correctPassword = "foo";
+
+		if (login.getUserName().equals(correctUserName) && login.getPassword().equals(correctPassword)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+}
+
+------------------------------------------------------------
+
+package com.servlet;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+@WebServlet("/Login")
+public class Login extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	public Login() {
+		super();
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		com.service.Login ls = new com.service.Login();
+		com.model.Login login = new com.model.Login(request.getParameter("uname"), request.getParameter("pass"));
+
+		if (ls.login(login)) {
+			response.getWriter().print("Log in was successful!");
+			HttpSession session = request.getSession();
+			session.setAttribute("sessionName", request.getParameter("uname"));
+			response.sendRedirect("Dashboard.jsp");
+		} else {
+			response.setContentType("text/html");
+			response.getWriter().println("Log in was unsuccessful, please try again.<br><br>");
+			response.getWriter().println("<a href=\"Login.html\">Log In</a><br>");
+		}
+	}
+
+}
+
+--------------------------------------------------------
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Login</title>
+</head>
+<body>
+	<form action="Login" method="post">
+		UserName:<input type="text" name="uname"><br> 
+		Password:<input type="password" name="pass"><br>
+		<button type="submit">Log In</button>
+	</form>
+	
+	<br>UserName = Austin
+	<br> Password = foo
+	
+</body>
+</html>
+
+------------------------------------------------------------
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Dashboard</title>
+</head>
+<body>
+	<h1>
+		Welcome, <%=session.getAttribute("sessionName")%>.
+	</h1>
+	<a href="Login.html">Log Out</a>
+</body>
+</html>

@@ -1,0 +1,13 @@
+This program validates a User Login. It is a servlet-based web application that shows a login page 
+validates it. The correct values are hard-coded as there is no database invovled here. Upon a successful 
+login, a dashboard page is shown. The dashboard will provide a link for l ogging out. Additionally, 
+incorrect logins will be handled by showing an error message on the page. There is no database involved 
+here. 
+
+I began by creating an interface called UserDao which the service.Login will implement. The functions that
+need to be implemented is only login which will take in a model.login object. The login object is a pojo
+with two strings to hold username and password. Lastly, the servlet.login will handle the data processing.
+
+By writing this program, I have displayed various skills I have learned. I utilized the Eclipse IDE which 
+helped me write my program as well as used Git for version control. Apache Tom Cat was utilized as the 
+web server, HTML pages for the front end, and servlets for back end processing.
