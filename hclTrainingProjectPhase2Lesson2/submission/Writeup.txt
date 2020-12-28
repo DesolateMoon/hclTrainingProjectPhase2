@@ -1,0 +1,13 @@
+This program retrieves the product details using the product id. It is a servlet-based application that 
+shows a form to enter a product ID. The product ID is then validated, and product details are retrieved
+from the H2 database and displayed to the user. The product table in ithe H2 database is prepopulated with
+data using JDBC. The data processing will also be done using JDBC. 
+
+I began by creating a JDBC called DBConnection to create a table as well as prepopulate it. The prepopulated
+fields will be represented by the Product class. Thus, the POJO will match the database holding an id,
+name, department, and cost. Lastly, the JDBC called Retrieve will handle all the data processing to check
+if the user's input is valid aka if the id inputted matches any of the ids in the database.
+
+By writing this program, I have displayed various skills I have learned. I utilized the Eclipse IDE which 
+helped me write my program as well as used Git for version control. Apache Tom Cat was utilized as the 
+web server, HTML pages for the front end, and JDBC for back end processing.
