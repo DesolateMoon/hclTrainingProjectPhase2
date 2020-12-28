@@ -1,0 +1,60 @@
+package com.servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/Capture")
+public class Capture extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String name = request.getParameter("name");
+		String department = request.getParameter("department");
+		double cost = Double.valueOf(request.getParameter("cost"));
+		PrintWriter out = response.getWriter();
+
+		out.println("<html><head>");
+		out.println("<title>Capture Results</title>");
+		out.println("<table border='1' width='60%'>");
+		out.println("<tr>");
+		out.println("<th>ID</th> <th>Name</th> <th>Department</th> <th>Cost</th> </tr>");
+		out.println("<tr style='text-align:center'>");
+		out.println("<td>1</td> <td>" + 
+					name + "</td> <td>" + 
+					department + "</td> <td>" + 
+					cost + "</td>");
+		out.println("</tr>");
+		out.println("</table>");
+		out.println("<a href='index.jsp'>Go Back</a>");
+		out.println("</body></html>");
+	}
+
+}
+
+---------------------------------------------------
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<form action="Capture" method="get">
+		Name: <input type="text" name="name" required> <br>
+		Department: <input type="text" name="department" required> <br>
+		Cost: <input type="text" name="cost" pattern=^[0-9]{1,10}(\.[0-9]{1,2})?$ required><br> 
+		<input type="submit" value="submit">
+	</form>
+
+</body>
+</html>

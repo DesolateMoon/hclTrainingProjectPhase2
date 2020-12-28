@@ -1,0 +1,10 @@
+This program is a servlet-based web application that shows a form to enter product detials. It then captures 
+the details of a product in a servlet and then displays to the user the data that was entered. 
+
+I began by creating an index.jsp which takes in the neccessary fields. In this case it was the name of the 
+product, department, and cost. This will then interact with a servlet in the background called Capture. The
+servlet will process the data and then display a table of the User's input. 
+
+By writing this program, I have displayed various skills I have learned. I utilized the Eclipse IDE which 
+helped me write my program as well as used Git for version control. Apache Tom Cat was utilized as the 
+web server, JSP pages for the front end, and servlets for back end processing.
