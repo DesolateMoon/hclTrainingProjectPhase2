@@ -1,0 +1,14 @@
+This program registers and logs in a User with a username, password, and email. It utilizes JSP, 
+servlets, and Hibernate to do the required workflow. The registration.html will forward it to a servlet
+which will then handle the registration using Hibernate. The login.html will forward it to a JSP to 
+validate the user login. Upon successful log in the session name will be presented with a log out
+button. 
+
+I began by creating an interface called UserDao which the UserService will implement. The functions that
+need to be implemented is only registration which will take in a User object. The User object is a pojo
+with various fields such as id, name, password, and email. Furthermore, the servlet.Registration will handle 
+the data processing. Lastly, a hibernate.cfg.xml file is made to interact with the H2 database. 
+
+By writing this program, I have displayed various skills I have learned. I utilized the Eclipse IDE which 
+helped me write my program as well as used Git for version control. Apache Tom Cat was utilized as the 
+web server, HTML pages for the front end, and servlets for back end processing.

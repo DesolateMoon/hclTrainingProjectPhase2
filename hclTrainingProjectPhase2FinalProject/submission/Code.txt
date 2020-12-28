@@ -1,0 +1,338 @@
+package com.dao;
+
+import com.model.User;
+
+public interface UserDao {
+	public void registration(User user);
+	public void login();
+}
+
+------------------------------------
+
+package com.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table
+public class User {
+	
+	@Id
+	@GeneratedValue (strategy = GenerationType.IDENTITY)
+	private int id;
+	@Column(name = "name")
+	private String name;
+	private String password;
+	private String email;
+	
+	public User() {
+		super();
+	}
+
+	public User(String name, String password, String email) {
+		super();
+		this.name = name;
+		this.password = password;
+		this.email = email;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", name=" + name + ", password=" + password + ", email=" + email + "]";
+	}
+}
+
+--------------------------------------------------------
+
+package com.service;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+import com.dao.UserDao;
+import com.model.User;
+import com.utility.HibernateUtility;
+
+public class UserService implements UserDao {
+
+	@Override
+	public void registration(User user) {
+		try {
+			Session session = HibernateUtility.getSession();
+			Transaction tx = session.beginTransaction();
+			session.save(user);
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void login() {
+	}
+
+}
+
+----------------------------------------------------
+
+package com.servlet;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.service.UserService;
+
+@WebServlet("/Registration")
+public class Registration extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		UserService userService = new UserService();
+
+		com.model.User reg = new com.model.User(request.getParameter("name"),
+												request.getParameter("password"),
+												request.getParameter("email"));
+
+		userService.registration(reg);
+		
+		HttpSession session = request.getSession();
+		session.setAttribute("sesname", request.getParameter("name"));
+		response.sendRedirect("registrationSuccess.jsp");
+	}
+
+}
+
+---------------------------------------------
+
+package com.utility;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.cfg.Configuration;
+import org.objectweb.asm.attrs.Annotation;
+
+public class HibernateUtility {
+	private static SessionFactory sf;
+	static {
+		sf = new AnnotationConfiguration().configure().buildSessionFactory();
+	}
+	
+	public static Session getSession() {
+		Session session = sf.openSession();
+		return session;
+	}
+}
+
+
+-----------------------------------------------------
+
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+
+		<property name="hibernate.dialect">
+			org.hibernate.dialect.H2Dialect
+		</property>
+
+		<property name="hibernate.connection.driver_class">
+			org.h2.Driver
+		</property>
+
+		<!-- Assume test is the database name -->
+
+		<property name="hibernate.hbm2ddl.auto">
+			create
+		</property>
+
+		<property name="hibernate.connection.url">
+			jdbc:h2:~/test
+		</property>
+
+		<property name="hibernate.connection.username">
+			sa
+		</property>
+
+		<property name="hibernate.connection.password"></property>
+
+		<!-- List of XML mapping files -->
+		<mapping class="com.model.User" />
+
+	</session-factory>
+</hibernate-configuration>
+
+-----------------------------------------------------------
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<form action="loginValid.jsp" method="post">
+
+		Name:<input type="text" name="name"> <br /> 
+		Password:<input type="password" name="password"> <br /> 
+
+		<button type="submit">Log In</button>
+
+	</form>
+
+</body>
+</html>
+
+--------------------------------------------------------------
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+Welcome : <%=session.getAttribute("sesname") %> <br>
+
+</body>
+
+<a href="login.html">logout</a>
+
+</html>
+
+---------------------------------------------------------------
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<%@ page language="java" import="java.sql.*"%>
+	<%@ page language="java" import="javax.servlet.http.HttpSession"%>
+	<%
+		String searchName = request.getParameter("name");
+		String searchPassword = request.getParameter("password");
+		String sql = "select name, password from user";
+		try {
+			Class.forName("org.h2.Driver");
+			Connection conn = DriverManager.getConnection("jdbc:h2:~/test", "sa", "");
+
+			PreparedStatement pst = conn.prepareStatement(sql);
+			ResultSet rs = pst.executeQuery();
+			
+			boolean userFound = false;
+			
+			while (rs.next()) {
+				String name = rs.getString(1);
+				String email = rs.getString(2);
+				if (searchName.equals(name) && searchPassword.equals(email)) {
+					response.getWriter().println("Login Successful");
+					userFound = true;
+					
+					session.setAttribute("sesname", name);
+					response.sendRedirect("loginSuccess.jsp");
+				}
+			}
+			if (!userFound) {
+				response.getWriter().println("Name and Password do not match our records.");
+				out.println("<br> <a href='login.html'>Go Back</a> <br>");
+			} 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	%>
+</body>
+</html>
+
+---------------------------------------------------------------------
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<form action="Registration" method="post">
+
+		Name:<input type="text" name="name"> <br /> 
+		Password:<input type="text" name="password"> <br /> 
+		Email:<input type="email" name="email"> <br /> 
+		<button type="submit">Register</button>
+
+	</form>
+
+</body>
+</html>
+
+-------------------------------------------------------------------------
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+Welcome : <%=session.getAttribute("sesname") %> <br>
+
+</body>
+
+<a href="registration.html">logout</a>
+
+</html>
