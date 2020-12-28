@@ -1,0 +1,15 @@
+This program adds a new product into the database. It is a servlet-based web application that shows a 
+form to add new products. A H2 database will be created to store product data. The form data will be 
+validated, and a row will be added to the database. The ID will be auto incremented. All database processing
+will be done using Hibernate.
+
+I began by creating a model for the Products. It is a simple POJO that holds id, name, department, and cost.
+This is also reflective of the Lesson2. I then made a Registration servlet which will delegate to Hibernate 
+Utility to create Session Factory. The Session Factory will open sessions. The Registration servlet will
+interact with the H2 database and will display a table upon successful insertion into the database.  Lastly, 
+a hibernate.cfg.xml file is made to interact with the H2 database. 
+
+By writing this program, I have displayed various skills I have learned. I utilized the Eclipse IDE which 
+helped me write my program as well as used Git for version control. Apache Tom Cat was utilized as the 
+web server, HTML pages for the front end, servlet for back end processing, and Hibernate to store data
+into the database.

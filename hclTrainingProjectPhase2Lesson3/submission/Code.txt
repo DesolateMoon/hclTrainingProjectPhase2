@@ -1,0 +1,205 @@
+package com.model;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+
+@Entity
+@Table
+public class Product {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
+	private String name;
+	private String department;
+	private double cost;
+	
+	public Product() {
+		super();
+	}
+
+	public Product(String name, String department, double cost) {
+		super();
+		this.name = name;
+		this.department = department;
+		this.cost = cost;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public double getCost() {
+		return cost;
+	}
+
+	public void setCost(double cost) {
+		this.cost = cost;
+	}
+
+	@Override
+	public String toString() {
+		return "Product [id=" + id + ", name=" + name + ", department=" + department + ", cost=" + cost + "]";
+	}
+}
+
+----------------------------------------------------
+
+package com.servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+import com.utility.HibernateUtility;
+
+@WebServlet("/Registration")
+public class Registration extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		PrintWriter out = response.getWriter();
+		
+		com.model.Product product = new com.model.Product(request.getParameter("name"), 
+														  request.getParameter("department"), 
+														  Double.valueOf(request.getParameter("cost")));
+
+		try {
+			Session session = HibernateUtility.getSession();
+			Transaction tx = session.beginTransaction();
+			session.save(product);
+			tx.commit();
+			System.out.println(("Product is registered."));
+			
+			out.println("<html><head>");
+			out.println("<title>Product Detail</title>");
+			out.println("<table border='1' width='60%'>");
+			out.println("<tr>");
+			out.println("<th>ID</th> <th>Name</th> <th>Department</th> <th>Cost</th> </tr>");
+			out.println("<tr style='text-align:center'>");
+			out.println("<td>" + product.getId() + 
+						"</td> <td>" + product.getName() + 
+						"</td> <td>" + product.getDepartment() + 
+						"</td> <td>" + product.getCost()+ 
+						"</td>");
+			out.println("</tr>");
+			out.println("</table>");
+			out.println("<a href='index.html'>Go Back</a> <br>");
+			out.println("</body></html>");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+---------------------------------------------------
+
+package com.utility;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.cfg.Configuration;
+import org.objectweb.asm.attrs.Annotation;
+
+public class HibernateUtility {
+	private static SessionFactory sf;
+	static {
+		sf = new AnnotationConfiguration().configure().buildSessionFactory();
+	}
+	
+	public static Session getSession() {
+		Session session = sf.openSession();
+		return session;
+	}
+}
+
+-------------------------------------------------------
+
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+
+		<property name="hibernate.dialect">
+			org.hibernate.dialect.H2Dialect
+		</property>
+
+		<property name="hibernate.connection.driver_class">
+			org.h2.Driver
+		</property>
+
+		<!-- Assume test is the database name -->
+
+		<property name="hibernate.hbm2ddl.auto">
+			update
+		</property>
+
+		<property name="hibernate.connection.url">
+			jdbc:h2:~/test
+		</property>
+
+		<property name="hibernate.connection.username">
+			sa
+		</property>
+
+		<property name="hibernate.connection.password"></property>
+
+		<!-- List of XML mapping files -->
+		<mapping class="com.model.Product" />
+
+	</session-factory>
+</hibernate-configuration>
+
+--------------------------------------------------------
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<form action="Registration" method="post">
+		Name: <input type="text" name="name" required> <br>
+		Department: <input type="text" name="department" required> <br>
+		Cost: <input type="text" name="cost" pattern=^[0-9]{1,10}(\.[0-9]{1,2})?$ required><br> 
+		<input type="submit" value="submit">
+	</form>
+</body>
+</html>
